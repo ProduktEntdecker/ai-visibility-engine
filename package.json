@@ -1,0 +1,30 @@
+{
+  "name": "ai-visibility-engine",
+  "version": "0.1.0",
+  "description": "AI Visibility Engine - Make your brand the #1 recommendation by AI search engines",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "scan": "node src/index.js scan",
+    "quick-scan": "node src/index.js quick-scan",
+    "report": "node src/index.js report",
+    "pitch": "node src/index.js pitch",
+    "demo": "bash scripts/demo.sh",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "bin": {
+    "aive": "./src/index.js"
+  },
+  "keywords": ["geo", "seo", "ai-visibility", "schema-markup", "llm-optimization"],
+  "author": "chilli mind x Florian Steiner",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "cheerio": "^1.0.0",
+    "commander": "^12.0.0",
+    "ora": "^8.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
