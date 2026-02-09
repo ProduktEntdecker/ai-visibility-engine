@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Visibility Engine — chilli mind Partnership</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0a0a0a;
+    color: #ffffff;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .deck { height: 100vh; width: 100vw; position: relative; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 80px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+
+  .slide-number {
+    position: fixed; bottom: 30px; right: 40px;
+    font-size: 14px; color: rgba(255,255,255,0.3); z-index: 100;
+  }
+
+  .nav-hint {
+    position: fixed; bottom: 30px; left: 40px;
+    font-size: 12px; color: rgba(255,255,255,0.2); z-index: 100;
+  }
+
+  /* Common elements */
+  h1 { font-size: 56px; font-weight: 800; line-height: 1.1; max-width: 900px; text-align: center; }
+  h2 { font-size: 42px; font-weight: 700; line-height: 1.2; max-width: 800px; }
+  h3 { font-size: 28px; font-weight: 600; }
+  p { font-size: 20px; line-height: 1.6; max-width: 700px; color: rgba(255,255,255,0.7); }
+  .accent { color: #E82A34; }
+  .highlight { background: linear-gradient(135deg, #E82A34, #FF3000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtle { color: rgba(255,255,255,0.4); }
+
+  .stat-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;
+    margin-top: 60px; max-width: 900px;
+  }
+  .stat { text-align: center; }
+  .stat .number { font-size: 64px; font-weight: 800; }
+  .stat .label { font-size: 16px; color: rgba(255,255,255,0.5); margin-top: 8px; }
+
+  .value-stack {
+    margin-top: 40px; width: 100%; max-width: 700px;
+  }
+  .value-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 18px;
+  }
+  .value-item .price { color: rgba(255,255,255,0.4); text-decoration: line-through; }
+
+  .total-line {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 24px; margin-top: 4px;
+    background: rgba(232, 42, 52, 0.15); border-radius: 8px;
+    font-size: 22px; font-weight: 700;
+  }
+
+  .partner-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+    margin-top: 60px; max-width: 900px; width: 100%;
+  }
+  .partner-card {
+    padding: 40px; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
+  }
+  .partner-card h3 { margin-bottom: 16px; }
+  .partner-card ul { list-style: none; margin-top: 16px; }
+  .partner-card li { padding: 8px 0; font-size: 16px; color: rgba(255,255,255,0.6); }
+  .partner-card li::before { content: '+ '; color: #E82A34; font-weight: 700; }
+
+  .timeline {
+    margin-top: 50px; width: 100%; max-width: 800px;
+  }
+  .timeline-item {
+    display: flex; gap: 24px; padding: 20px 0;
+    border-left: 2px solid rgba(255,255,255,0.1); margin-left: 20px; padding-left: 30px;
+    position: relative;
+  }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -7px; top: 24px;
+    width: 12px; height: 12px; border-radius: 50%; background: #E82A34;
+  }
+  .timeline-week { font-size: 14px; font-weight: 700; color: #E82A34; min-width: 80px; }
+  .timeline-content h4 { font-size: 18px; margin-bottom: 4px; }
+  .timeline-content p { font-size: 14px; color: rgba(255,255,255,0.5); }
+
+  .logo-area {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 40px;
+  }
+  .logo-dot { width: 32px; height: 32px; background: #E82A34; border-radius: 50%; }
+  .logo-text { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
+
+  .cta-box {
+    margin-top: 50px; padding: 40px 60px;
+    background: linear-gradient(135deg, #E82A34, #FF3000);
+    border-radius: 16px; text-align: center;
+  }
+  .cta-box h3 { font-size: 32px; margin-bottom: 12px; }
+  .cta-box p { color: rgba(255,255,255,0.9); margin: 0 auto; }
+
+  /* Score demo embed */
+  .demo-score {
+    display: flex; align-items: center; gap: 60px; margin-top: 40px;
+  }
+  .score-circle {
+    width: 160px; height: 160px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .score-circle svg { position: absolute; transform: rotate(-90deg); }
+  .score-circle .val { font-size: 52px; font-weight: 800; }
+  .score-circle .lbl { font-size: 13px; color: rgba(255,255,255,0.5); }
+  .score-details { text-align: left; }
+  .score-row { display: flex; gap: 16px; align-items: center; padding: 8px 0; }
+  .score-bar { width: 200px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide active" data-slide="1">
+    <div class="logo-area">
+      <div class="logo-dot"></div>
+      <span class="logo-text">chilli mind</span>
+    </div>
+    <h1>AI Visibility<br><span class="highlight">Engine</span></h1>
+    <p style="margin-top:24px;text-align:center">Machen Sie Ihre Kunden zur #1 Empfehlung<br>von ChatGPT, Google AI & Perplexity.</p>
+    <p class="subtle" style="margin-top:60px;font-size:14px">Oliver & Philipp &middot; 10. Februar 2026</p>
+  </div>
+
+  <!-- SLIDE 2: The Problem -->
+  <div class="slide" data-slide="2">
+    <p class="subtle" style="margin-bottom:20px;font-size:14px">DAS PROBLEM</p>
+    <h1 style="font-size:48px"><span class="accent">55%</span> aller Google-Suchen zeigen jetzt AI-Antworten.</h1>
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="number highlight">400M</div>
+        <div class="label">Woechentliche ChatGPT-Nutzer</div>
+      </div>
+      <div class="stat">
+        <div class="number highlight">55%</div>
+        <div class="label">Google-Suchen mit AI Overviews</div>
+      </div>
+      <div class="stat">
+        <div class="number highlight">31%</div>
+        <div class="label">Websites mit Schema Markup</div>
+      </div>
+    </div>
+    <p style="margin-top:40px;text-align:center">Eure Kunden investieren in SEO &mdash; aber sind <strong style="color:white">unsichtbar</strong> fuer die AI-Engines,<br>die zunehmend Kaufentscheidungen beeinflussen.</p>
+  </div>
+
+  <!-- SLIDE 3: Market -->
+  <div class="slide" data-slide="3">
+    <p class="subtle" style="margin-bottom:20px;font-size:14px">DER MARKT</p>
+    <h2>Was Unternehmen heute zahlen</h2>
+    <div class="stat-grid" style="margin-top:40px">
+      <div class="stat">
+        <div class="number" style="font-size:48px;color:#E82A34">$5-30k</div>
+        <div class="label">pro Monat fuer Enterprise GEO-Agenturen</div>
+      </div>
+      <div class="stat">
+        <div class="number" style="font-size:48px;color:#f59e0b">&euro;50-450</div>
+        <div class="label">pro Monat fuer Tools (nur Schema)</div>
+      </div>
+      <div class="stat">
+        <div class="number" style="font-size:48px;color:#22c55e">&euro;1.667</div>
+        <div class="label">pro Monat &mdash; unser Preis (Full Service)</div>
+      </div>
+    </div>
+    <p style="margin-top:40px;text-align:center">Wir positionieren uns zwischen teurem Enterprise-Consulting<br>und limitierten Self-Service-Tools. <strong style="color:white">Der Sweet Spot fuer den Mittelstand.</strong></p>
+  </div>
+
+  <!-- SLIDE 4: Solution -->
+  <div class="slide" data-slide="4">
+    <p class="subtle" style="margin-bottom:20px;font-size:14px">DIE LOESUNG</p>
+    <h2>Was der Kunde bekommt</h2>
+    <div class="value-stack">
+      <div class="value-item"><span>AI Visibility Audit (60+ Seiten Report)</span> <span class="price">&euro;5.000</span></div>
+      <div class="value-item"><span>Schema & Entity Implementierung</span> <span class="price">&euro;8.000</span></div>
+      <div class="value-item"><span>Content Optimization Playbook (50 FAQs)</span> <span class="price">&euro;4.000</span></div>
+      <div class="value-item"><span>12 Monate AI Visibility Monitoring</span> <span class="price">&euro;12.000</span></div>
+      <div class="value-item"><span>4x Quarterly Strategy Calls</span> <span class="price">&euro;4.000</span></div>
+      <div class="value-item"><span><strong>Garantie:</strong> Messbare Verbesserung oder 6 Monate gratis</span> <span style="color:#22c55e">&#10003;</span></div>
+      <div class="total-line">
+        <span>Gesamtwert: <span style="text-decoration:line-through;opacity:0.5">&euro;33.000</span></span>
+        <span class="highlight" style="font-size:28px">&euro;20.000/Jahr</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Live Demo -->
+  <div class="slide" data-slide="5">
+    <p class="subtle" style="margin-bottom:20px;font-size:14px">LIVE DEMO</p>
+    <h2>Scan: chilli-mind.com</h2>
+    <div class="demo-score">
+      <div class="score-circle">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="10"/>
+          <circle cx="80" cy="80" r="70" fill="none" stroke="#f59e0b" stroke-width="10"
+            stroke-linecap="round" stroke-dasharray="207 440"/>
+        </svg>
+        <div style="text-align:center">
+          <div class="val" style="color:#f59e0b">47</div>
+          <div class="lbl">Overall</div>
+        </div>
+      </div>
+      <div class="score-details">
+        <div class="score-row">
+          <span style="width:120px;font-size:14px">AI Visibility</span>
+          <div class="score-bar"><div class="score-fill" style="width:21%;background:#E82A34"></div></div>
+          <span style="font-weight:700;color:#E82A34">21</span>
+        </div>
+        <div class="score-row">
+          <span style="width:120px;font-size:14px">Schema Health</span>
+          <div class="score-bar"><div class="score-fill" style="width:45%;background:#f59e0b"></div></div>
+          <span style="font-weight:700;color:#f59e0b">45</span>
+        </div>
+        <div class="score-row">
+          <span style="width:120px;font-size:14px">Technical</span>
+          <div class="score-bar"><div class="score-fill" style="width:85%;background:#22c55e"></div></div>
+          <span style="font-weight:700;color:#22c55e">85</span>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:30px;text-align:center;font-size:16px">
+      Technisch stark, aber <span style="color:#E82A34;font-weight:600">fuer AI-Engines fast unsichtbar</span>.<br>
+      Das ist typisch &mdash; und genau die Luecke, die wir schliessen.
+    </p>
+    <p class="subtle" style="margin-top:12px;font-size:13px">
+      Scan laeuft live in &lt;60 Sekunden auf jedem Domain. Report wird automatisch generiert.
+    </p>
+  </div>
+
+  <!-- SLIDE 6: How it works for chilli mind -->
+  <div class="slide" data-slide="6">
+    <p class="subtle" style="margin-bottom:20px;font-size:14px">PARTNERSHIP MODEL</p>
+    <h2>Warum das fuer chilli mind funktioniert</h2>
+    <div class="partner-grid">
+      <div class="partner-card">
+        <h3>chilli mind</h3>
+        <p style="font-size:15px;color:rgba(255,255,255,0.5)">Vertrieb & Branding</p>
+        <ul>
+          <li>850+ bestehende Kundenprojekte</li>
+          <li>Vertrauensvorschuss bei Enterprise-Kunden</li>
+          <li>Kein Delivery-Aufwand</li>
+          <li><strong style="color:white">25% Provision = &euro;5.000 pro Kunde/Jahr</strong></li>
+          <li>Bei 10 Kunden: &euro;50.000/Jahr zusaetzlich</li>
+        </ul>
+      </div>
+      <div class="partner-card">
+        <h3>Delivery Partner</h3>
+        <p style="font-size:15px;color:rgba(255,255,255,0.5)">AI-automatisierte Umsetzung</p>
+        <ul>
+          <li>80%+ automatisiert (Claude, Codex, Gemini)</li>
+          <li>~38h Aufwand pro Kunde/Jahr</li>
+          <li>Skaliert auf 30+ Kunden</li>
+          <li><strong style="color:white">75% = &euro;15.000 pro Kunde/Jahr</strong></li>
+          <li>Effektiv: ~&euro;400/Stunde</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Roadmap -->
+  <div class="slide" data-slide="7">
+    <p class="subtle" style="margin-bottom:20px;font-size:14px">NAECHSTE SCHRITTE</p>
+    <h2>4-Wochen Roadmap</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div>
+          <div class="timeline-week">Woche 1</div>
+          <h4>Scanner MVP finalisieren</h4>
+          <p>Live-Scraping aller AI-Engines, Dashboard Setup</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div>
+          <div class="timeline-week">Woche 2</div>
+          <h4>Pilot-Kunde scannen</h4>
+          <p>Ersten chilli mind Kunden scannen, Case Study erstellen</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div>
+          <div class="timeline-week">Woche 3</div>
+          <h4>Monitoring & Reporting</h4>
+          <p>Automatisches monatliches Reporting aufsetzen</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div>
+          <div class="timeline-week">Woche 4</div>
+          <h4>Go-to-Market</h4>
+          <p>Sales Email an Top 20 chilli mind Kunden, erstes Closing</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: CTA -->
+  <div class="slide" data-slide="8">
+    <div class="logo-area" style="margin-bottom:60px">
+      <div class="logo-dot"></div>
+      <span class="logo-text">chilli mind</span>
+      <span style="opacity:0.3;margin:0 12px">x</span>
+      <span class="logo-text">AI Visibility Engine</span>
+    </div>
+    <div class="cta-box">
+      <h3>Naechster Schritt</h3>
+      <p>Einen Pilot-Kunden waehlen. Wir scannen kostenlos.<br>Ergebnis in 48 Stunden. Kein Risiko.</p>
+    </div>
+    <p class="subtle" style="margin-top:40px;font-size:14px">
+      Der kostenlose Scan ist der beste Eisbrecher &mdash;<br>
+      jeder schlechte Score ist ein warmer Lead fuer &euro;20k.
+    </p>
+  </div>
+
+</div>
+
+<div class="slide-number"><span id="current">1</span> / <span id="total">8</span></div>
+<div class="nav-hint">Arrow keys or click to navigate</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  const total = slides.length;
+  document.getElementById('total').textContent = total;
+
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = ((n % total) + total) % total;
+    slides[current].classList.add('active');
+    document.getElementById('current').textContent = current + 1;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      showSlide(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      showSlide(current - 1);
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.clientX > window.innerWidth / 2) showSlide(current + 1);
+    else showSlide(current - 1);
+  });
+</script>
+</body>
+</html>
