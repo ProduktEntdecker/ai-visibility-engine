@@ -1,10 +1,3 @@
-import { readFileSync } from 'fs';
-import { writeFileSync } from 'fs';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
 function scoreColor(score) {
   if (score >= 70) return '#22c55e';
   if (score >= 40) return '#f59e0b';
@@ -208,15 +201,37 @@ export function generateReport(scanResult) {
 <!-- AI Engine Breakdown -->
 <div class="section">
   <h2>AI Engine Breakdown</h2>
+  ${(() => {
+    const hasEstimated = Object.values(aiProbe?.engineBreakdown || {}).some(d => d.method === 'estimated');
+    const hasNotMeasured = Object.values(aiProbe?.engineBreakdown || {}).some(d => d.method === 'not_measured');
+    const notes = [];
+    if (hasEstimated) notes.push('<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;background:#fff3cd;color:#856404;margin-right:4px">EST</span> = Estimated from technical signals (no live AI query)');
+    if (hasNotMeasured) notes.push('<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;background:#f0f0f0;color:#666;margin-right:4px">N/A</span> = Not measured (API key required)');
+    return notes.length > 0 ? '<div style="margin-bottom:16px;padding:12px 16px;background:#fafafa;border-radius:8px;font-size:13px;color:#666;border-left:3px solid #f59e0b">' + notes.join('<br>') + '</div>' : '';
+  })()}
   <div class="engine-grid">
-    ${Object.entries(aiProbe?.engineBreakdown || {}).map(([engine, data]) => `
+    ${Object.entries(aiProbe?.engineBreakdown || {}).map(([engine, data]) => {
+      const engineName = engine === 'google' ? 'Google AI Overviews' : engine === 'chatgpt' ? 'ChatGPT' : engine === 'perplexity' ? 'Perplexity' : 'Gemini';
+      const methodBadge = data.method === 'estimated'
+        ? '<span style="display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;background:#fff3cd;color:#856404;margin-left:6px">EST</span>'
+        : data.method === 'not_measured'
+        ? '<span style="display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;background:#f0f0f0;color:#666;margin-left:6px">N/A</span>'
+        : '<span style="display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;background:#dcfce7;color:#22c55e;margin-left:6px">LIVE</span>';
+      const scoreDisplay = data.method === 'not_measured' ? '—' : data.score;
+      const scoreColorVal = data.method === 'not_measured' ? '#999' : scoreColor(data.score);
+      const detail = data.method === 'not_measured'
+        ? 'No SERP API key — set SERPAPI_KEY to enable'
+        : data.method === 'estimated'
+        ? 'Estimated from schema &amp; technical signals'
+        : data.mentions + ' mentions in ' + data.totalQueries + ' queries';
+      return `
     <div class="engine-card">
-      <div class="engine-name">${engine === 'google' ? 'Google AI Overviews' : engine === 'chatgpt' ? 'ChatGPT' : engine === 'perplexity' ? 'Perplexity' : 'Gemini'}</div>
-      <div class="engine-score" style="color:${scoreColor(data.score)}">${data.score}<span style="font-size:14px;color:#888">/100</span></div>
-      <div class="engine-detail">${data.mentions} mentions in ${data.totalQueries} queries${data.method === 'estimated' ? ' (estimated)' : ''}</div>
-      <div class="bar"><div class="bar-fill" style="width:${data.score}%;background:${scoreColor(data.score)}"></div></div>
+      <div class="engine-name">${engineName}${methodBadge}</div>
+      <div class="engine-score" style="color:${scoreColorVal}">${scoreDisplay}${data.method !== 'not_measured' ? '<span style="font-size:14px;color:#888">/100</span>' : ''}</div>
+      <div class="engine-detail">${detail}</div>
+      <div class="bar"><div class="bar-fill" style="width:${data.method === 'not_measured' ? 0 : data.score}%;background:${scoreColorVal}"></div></div>
     </div>
-    `).join('')}
+    `;}).join('')}
   </div>
 </div>
 
@@ -225,20 +240,27 @@ ${(aiProbe?.competitorComparison?.length > 0) ? `
 <div class="section">
   <h2>Competitor Benchmark</h2>
   <table>
-    <tr><th>Brand</th><th>AI Visibility Score</th><th>Status</th></tr>
+    <tr><th>Brand</th><th>Overall</th><th>AI Visibility</th><th>Schema</th><th>Technical</th><th>Status</th></tr>
     <tr style="background:#f8f8f8;font-weight:600">
       <td>${meta.brand || meta.domain}</td>
+      <td><span style="color:${scoreColor(overallScore)}">${overallScore}</span></td>
       <td><span style="color:${scoreColor(aiProbe.aiVisibilityScore)}">${aiProbe.aiVisibilityScore}</span></td>
+      <td><span style="color:${scoreColor(schema.schemaScore)}">${schema.schemaScore}</span></td>
+      <td><span style="color:${scoreColor(technical.technicalScore)}">${technical.technicalScore}</span></td>
       <td>You</td>
     </tr>
     ${aiProbe.competitorComparison.map(c => `
     <tr>
-      <td>${c.competitor}</td>
+      <td>${c.competitor}${c.error ? ' <span style="font-size:11px;color:#E82A34">(scan failed)</span>' : ''}</td>
       <td><span style="color:${scoreColor(c.estimatedScore)}">${c.estimatedScore}</span></td>
-      <td>${c.vsYou === 'ahead' ? '<span style="color:#22c55e">You lead</span>' : '<span style="color:#E82A34">They lead</span>'}</td>
+      <td><span style="color:${scoreColor(c.aiEstimate || 0)}">${c.aiEstimate || 0}</span> <span style="font-size:10px;color:#888">EST</span></td>
+      <td><span style="color:${scoreColor(c.schemaScore || 0)}">${c.schemaScore || 0}</span></td>
+      <td><span style="color:${scoreColor(c.technicalScore || 0)}">${c.technicalScore || 0}</span></td>
+      <td>${c.vsYou === 'ahead' ? '<span style="color:#22c55e">You lead</span>' : c.vsYou === 'tied' ? '<span style="color:#888">Tied</span>' : '<span style="color:#E82A34">They lead</span>'}</td>
     </tr>
     `).join('')}
   </table>
+  <p style="margin-top:12px;font-size:12px;color:#888">Schema and Technical scores are measured via live website scan. AI Visibility scores (EST) are estimated from technical signals. Overall = Schema 30% + Technical 30% + AI Visibility 40%.</p>
 </div>
 ` : ''}
 
