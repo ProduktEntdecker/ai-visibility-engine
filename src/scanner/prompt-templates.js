@@ -73,21 +73,21 @@ const INDUSTRY_PROMPTS = {
     'Which ecommerce platforms handle multi-language best?',
   ],
   'generic': [
-    'What are the best companies in this industry in Germany?',
-    'Who are the market leaders in this space in DACH?',
-    'Which companies would you recommend for this service?',
-    'Top rated providers in Germany for this category',
-    'Who offers the best quality-to-price ratio?',
-    'Which companies have the best reviews?',
-    'Most innovative companies in this sector in Europe',
-    'Best German companies for enterprise clients',
-    'Who are the trusted partners for large organizations?',
-    'Which companies are known for excellent customer service?',
-    'Top companies for digital solutions in this space',
-    'Who are the emerging leaders in this industry?',
-    'Best German Mittelstand companies in this field',
-    'Which providers offer the most comprehensive solutions?',
-    'Who has the strongest track record in this industry?',
+    'What are the best companies in {industry} in Germany?',
+    'Who are the market leaders in {industry} in DACH?',
+    'Which companies would you recommend for {industry}?',
+    'Top rated {industry} providers in Germany',
+    'Who offers the best quality-to-price ratio in {industry}?',
+    'Which {industry} companies have the best reviews?',
+    'Most innovative {industry} companies in Europe',
+    'Best German {industry} companies for enterprise clients',
+    'Who are the trusted {industry} partners for large organizations?',
+    'Which {industry} companies are known for excellent customer service?',
+    'Top {industry} companies for digital solutions',
+    'Who are the emerging leaders in {industry}?',
+    'Best German Mittelstand companies in {industry}',
+    'Which {industry} providers offer the most comprehensive solutions?',
+    'Who has the strongest track record in {industry}?',
   ]
 };
 
@@ -97,7 +97,8 @@ const INDUSTRY_PROMPTS = {
  */
 export function generatePrompts(industry, brand, competitors = []) {
   const normalizedIndustry = industry.toLowerCase().trim();
-  const basePrompts = INDUSTRY_PROMPTS[normalizedIndustry] || INDUSTRY_PROMPTS['generic'];
+  const templatePrompts = INDUSTRY_PROMPTS[normalizedIndustry] || INDUSTRY_PROMPTS['generic'];
+  const basePrompts = templatePrompts.map(p => p.replace(/\{industry\}/g, industry));
 
   // Add brand-specific prompts
   const brandPrompts = [

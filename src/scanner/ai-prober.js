@@ -1,4 +1,6 @@
 import { generatePrompts } from './prompt-templates.js';
+import { auditSchema } from './schema-auditor.js';
+import { auditTechnical } from './technical-auditor.js';
 
 /**
  * AI Engine Prober - MVP version.
@@ -89,14 +91,19 @@ function estimateAIVisibility(domain, brand, schemaScore, technicalScore) {
 export async function probeAIEngines(domain, brand, industry, competitors = [], schemaScore = 0, technicalScore = 0, onProgress) {
   const prompts = generatePrompts(industry, brand, competitors);
 
+  if (!SERP_API_KEY) {
+    onProgress?.('WARNING: No SERPAPI_KEY set — Google SERP data will not be measured.');
+  }
+
   const result = {
     domain,
     brand,
     industry,
     aiVisibilityScore: 0,
     totalPrompts: prompts.length,
+    hasSerpApiKey: !!SERP_API_KEY,
     engineBreakdown: {
-      google: { mentions: 0, aiOverviewMentions: 0, totalQueries: 0, score: 0 },
+      google: { mentions: 0, aiOverviewMentions: 0, totalQueries: 0, score: 0, method: SERP_API_KEY ? 'measured' : 'not_measured' },
       chatgpt: { mentions: 0, totalQueries: prompts.length, score: 0, method: 'estimated' },
       perplexity: { mentions: 0, totalQueries: prompts.length, score: 0, method: 'estimated' },
       gemini: { mentions: 0, totalQueries: prompts.length, score: 0, method: 'estimated' },
@@ -165,17 +172,15 @@ export async function probeAIEngines(domain, brand, industry, competitors = [], 
   result.engineBreakdown.gemini.mentions = Math.round(prompts.length * geminiFactor);
   result.engineBreakdown.gemini.score = Math.round(geminiFactor * 100);
 
-  // Fill missing queries from heuristic
+  // All queries not confirmed as mentioned are listed as missing
   for (const prompt of prompts) {
     if (!result.mentionedQueries.find(m => m.query === prompt) &&
         !result.topMissingQueries.find(m => m.query === prompt)) {
-      if (Math.random() > visibilityFactor) {
-        result.topMissingQueries.push({
-          query: prompt,
-          engine: 'multiple',
-          opportunity: 'Brand not mentioned in AI responses',
-        });
-      }
+      result.topMissingQueries.push({
+        query: prompt,
+        engine: 'multiple',
+        opportunity: 'Brand not confirmed in AI responses',
+      });
     }
   }
 
@@ -196,14 +201,45 @@ export async function probeAIEngines(domain, brand, industry, competitors = [], 
     engines.gemini.score * geminiWeight
   );
 
-  // Competitor comparison (simplified for MVP)
+  // Competitor comparison — actually scan each competitor
   for (const comp of competitors) {
-    const compFactor = estimateAIVisibility(comp, comp.split('.')[0], schemaScore * 0.8, technicalScore * 0.8);
-    result.competitorComparison.push({
-      competitor: comp,
-      estimatedScore: Math.round(compFactor * 100),
-      vsYou: result.aiVisibilityScore > Math.round(compFactor * 100) ? 'ahead' : 'behind',
-    });
+    onProgress?.(`Scanning competitor: ${comp}...`);
+    try {
+      const compSchema = await auditSchema(comp);
+      const compTech = await auditTechnical(comp);
+      const compVisibility = estimateAIVisibility(comp, comp.split('.')[0], compSchema.schemaScore, compTech.technicalScore);
+
+      const compOverall = Math.round(
+        (compSchema.schemaScore * 0.3) +
+        (compTech.technicalScore * 0.3) +
+        (Math.round(compVisibility * 100) * 0.4)
+      );
+
+      const yourOverall = Math.round(
+        (schemaScore * 0.3) +
+        (technicalScore * 0.3) +
+        (result.aiVisibilityScore * 0.4)
+      );
+
+      result.competitorComparison.push({
+        competitor: comp,
+        estimatedScore: compOverall,
+        schemaScore: compSchema.schemaScore,
+        technicalScore: compTech.technicalScore,
+        aiEstimate: Math.round(compVisibility * 100),
+        vsYou: yourOverall > compOverall ? 'ahead' : yourOverall === compOverall ? 'tied' : 'behind',
+      });
+    } catch {
+      result.competitorComparison.push({
+        competitor: comp,
+        estimatedScore: 0,
+        schemaScore: 0,
+        technicalScore: 0,
+        aiEstimate: 0,
+        vsYou: 'ahead',
+        error: 'Could not scan',
+      });
+    }
   }
 
   return result;
