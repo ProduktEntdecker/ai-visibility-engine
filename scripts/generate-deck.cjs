@@ -107,7 +107,7 @@ async function generate() {
   let s3 = pres.addSlide();
   s3.background = { color: C.black };
   s3.addText("DEMO", { x: 0.8, y: 0.4, w: 3, h: 0.3, fontSize: 11, fontFace: "Calibri", color: C.textMuted, charSpacing: 4, margin: 0 });
-  s3.addText("Wir haben chilli-mind.com gescannt.", { x: 0.8, y: 0.9, w: 8.5, h: 0.7, fontSize: 32, fontFace: "Georgia", color: C.white, bold: true, margin: 0 });
+  s3.addText("Wir haben chilli-mind.com gescannt.", { x: 0.8, y: 0.9, w: 8.5, h: 0.7, fontSize: 28, fontFace: "Georgia", color: C.white, bold: true, margin: 0 });
 
   // Overall score circle
   s3.addShape(pres.shapes.OVAL, { x: 0.8, y: 1.9, w: 2.0, h: 2.0, fill: { color: C.medGray }, line: { color: C.amber, width: 6 } });
@@ -253,7 +253,7 @@ async function generate() {
     { text: "Jahrespaket: ", options: { color: C.white, fontSize: 16 } },
     { text: "\u20AC33.000 Einzelwert", options: { color: C.textMuted, fontSize: 14, strikethrough: true } },
   ], { x: 1.0, y: 4.5, w: 5, h: 0.9, fontFace: "Calibri", bold: true, margin: 0, valign: "middle" });
-  s5.addText("\u20AC20.000/Jahr", { x: 6.0, y: 4.5, w: 3, h: 0.9, fontSize: 28, fontFace: "Georgia", color: C.red, bold: true, align: "right", margin: [0, 20, 0, 0], valign: "middle" });
+  s5.addText("\u20AC20.000/Jahr", { x: 5.0, y: 4.5, w: 4, h: 0.9, fontSize: 28, fontFace: "Georgia", color: C.red, bold: true, align: "right", margin: [0, 20, 0, 0], valign: "middle" });
 
   // ============================================================
   // SLIDE 6: Der Eisbrecher
@@ -262,9 +262,9 @@ async function generate() {
   s6.background = { color: C.black };
   s6.addText("DER EISBRECHER", { x: 0.8, y: 0.4, w: 3, h: 0.3, fontSize: 11, fontFace: "Calibri", color: C.textMuted, charSpacing: 4, margin: 0 });
   s6.addText([
-    { text: "Jeder schlechte Score\nist ein ", options: { color: C.white } },
+    { text: "Jeder schlechte Score ist ein\n", options: { color: C.white } },
     { text: "warmer Lead.", options: { color: C.red } },
-  ], { x: 0.8, y: 0.9, w: 8.5, h: 1.2, fontSize: 36, fontFace: "Georgia", bold: true, margin: 0 });
+  ], { x: 0.8, y: 0.9, w: 8.5, h: 1.2, fontSize: 32, fontFace: "Georgia", bold: true, margin: 0 });
 
   const flow = [
     { text: "Kostenlosen Scan\nanbieten", sub: "5 Minuten, kein Risiko", col: C.red },
@@ -292,7 +292,7 @@ async function generate() {
   let s7 = pres.addSlide();
   s7.background = { color: C.black };
   s7.addText("PARTNERSHIP", { x: 0.8, y: 0.4, w: 4, h: 0.3, fontSize: 11, fontFace: "Calibri", color: C.textMuted, charSpacing: 4, margin: 0 });
-  s7.addText("chilli mind verkauft. Ich liefere.", { x: 0.8, y: 0.9, w: 8.5, h: 0.7, fontSize: 32, fontFace: "Georgia", color: C.white, bold: true, margin: 0 });
+  s7.addText("chilli mind verkauft. Ich liefere.", { x: 0.8, y: 0.9, w: 8.5, h: 0.7, fontSize: 28, fontFace: "Georgia", color: C.white, bold: true, margin: 0 });
 
   // Left card - chilli mind
   s7.addShape(pres.shapes.RECTANGLE, { x: 0.8, y: 1.8, w: 4.1, h: 2.6, fill: { color: C.medGray }, shadow: makeShadow() });
@@ -397,7 +397,7 @@ async function generate() {
   s10.addShape(pres.shapes.RECTANGLE, { x: 1.5, y: 2.5, w: 7, h: 2.0, fill: { color: C.red }, shadow: makeShadow() });
   s10.addText("N\u00E4chster Schritt", { x: 1.5, y: 2.7, w: 7, h: 0.6, fontSize: 28, fontFace: "Georgia", color: C.white, bold: true, align: "center", margin: 0 });
   s10.addText("Einen Pilot-Kunden w\u00E4hlen. Wir scannen kostenlos.\nErgebnis in 48 Stunden. Kein Risiko.", {
-    x: 2.0, y: 3.3, w: 6, h: 0.9, fontSize: 16, fontFace: "Calibri", color: C.white, align: "center"
+    x: 1.5, y: 3.3, w: 7, h: 0.9, fontSize: 16, fontFace: "Calibri", color: C.white, align: "center"
   });
 
   s10.addText("Parallel setzen wir die Quick Wins f\u00FCr chilli-mind.com um \u2014\ndamit ihr selbst erlebt, wie der Score steigt.", {
