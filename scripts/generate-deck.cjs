@@ -154,60 +154,72 @@ async function generate() {
   // ============================================================
   let s4 = pres.addSlide();
   s4.background = { color: C.black };
-  s4.addText("WETTBEWERBER", { x: 0.8, y: 0.4, w: 4, h: 0.3, fontSize: 11, fontFace: "Calibri", color: C.textMuted, charSpacing: 4, margin: 0 });
-  s4.addText("Eure Wettbewerber haben dasselbe Problem.", { x: 0.8, y: 0.9, w: 8.5, h: 0.7, fontSize: 30, fontFace: "Georgia", color: C.white, bold: true, margin: 0 });
+  s4.addText("MARKT\u00DCBERBLICK", { x: 0.8, y: 0.4, w: 4, h: 0.3, fontSize: 11, fontFace: "Calibri", color: C.textMuted, charSpacing: 4, margin: 0 });
+  s4.addText("Wettbewerber & Kunden im Vergleich", { x: 0.8, y: 0.9, w: 8.5, h: 0.7, fontSize: 28, fontFace: "Georgia", color: C.white, bold: true, margin: 0 });
 
   const competitors = [
-    { name: "chilli mind", domain: "chilli-mind.com", score: 47, schema: 45, technical: 85, ai: 21, highlight: true },
-    { name: "UXMA", domain: "uxma.com", score: 41, schema: 0, technical: 100, ai: 28, highlight: false },
-    { name: "Ergosign", domain: "ergosign.de", score: 37, schema: 0, technical: 90, ai: 26, highlight: false },
+    { name: "chilli mind", domain: "chilli-mind.com", score: 47, schema: 45, technical: 85, ai: 21, highlight: true, type: "" },
+    { name: "UXMA", domain: "uxma.com", score: 41, schema: 0, technical: 100, ai: 28, highlight: false, type: "Wettbewerber" },
+    { name: "Ergosign", domain: "ergosign.de", score: 37, schema: 0, technical: 90, ai: 26, highlight: false, type: "Wettbewerber" },
+    { name: "Siemens", domain: "siemens.com", score: 45, schema: 0, technical: 95, ai: 41, highlight: false, type: "Kunde" },
+    { name: "B. Braun", domain: "bbraun.com", score: 38, schema: 0, technical: 90, ai: 28, highlight: false, type: "Kunde" },
   ];
 
   // Table header
-  const headerY = 1.8;
-  s4.addShape(pres.shapes.RECTANGLE, { x: 0.8, y: headerY, w: 8.4, h: 0.4, fill: { color: C.medGray } });
+  const headerY = 1.7;
+  s4.addShape(pres.shapes.RECTANGLE, { x: 0.8, y: headerY, w: 8.4, h: 0.35, fill: { color: C.medGray } });
   const headers = [
-    { text: "Unternehmen", x: 0.9, w: 2.6 },
-    { text: "Gesamt", x: 3.6, w: 1.2 },
-    { text: "Schema", x: 4.8, w: 1.2 },
-    { text: "Technical", x: 6.0, w: 1.2 },
-    { text: "AI Visibility", x: 7.2, w: 1.9 },
+    { text: "", x: 0.9, w: 0.5 },
+    { text: "Unternehmen", x: 1.4, w: 2.2 },
+    { text: "Gesamt", x: 3.6, w: 1.1 },
+    { text: "Schema", x: 4.7, w: 1.1 },
+    { text: "Technical", x: 5.8, w: 1.1 },
+    { text: "AI Visibility", x: 6.9, w: 1.5 },
   ];
   headers.forEach(h => {
-    s4.addText(h.text, { x: h.x, y: headerY, w: h.w, h: 0.4, fontSize: 10, fontFace: "Calibri", color: C.textMuted, bold: true, valign: "middle", margin: 0 });
+    s4.addText(h.text, { x: h.x, y: headerY, w: h.w, h: 0.35, fontSize: 9, fontFace: "Calibri", color: C.textMuted, bold: true, valign: "middle", margin: 0 });
   });
 
   competitors.forEach((comp, i) => {
-    const yPos = 2.3 + i * 0.7;
+    const yPos = 2.1 + i * 0.55;
     const bgColor = comp.highlight ? "3D1518" : (i % 2 === 0 ? C.darkGray : C.medGray);
-    s4.addShape(pres.shapes.RECTANGLE, { x: 0.8, y: yPos, w: 8.4, h: 0.6, fill: { color: bgColor } });
+    s4.addShape(pres.shapes.RECTANGLE, { x: 0.8, y: yPos, w: 8.4, h: 0.50, fill: { color: bgColor } });
     if (comp.highlight) {
-      s4.addShape(pres.shapes.RECTANGLE, { x: 0.8, y: yPos, w: 0.06, h: 0.6, fill: { color: C.red } });
+      s4.addShape(pres.shapes.RECTANGLE, { x: 0.8, y: yPos, w: 0.06, h: 0.50, fill: { color: C.red } });
+    }
+
+    // Type badge
+    if (comp.type) {
+      const badgeCol = comp.type === "Kunde" ? C.blue : C.textMuted;
+      s4.addText(comp.type, { x: 0.9, y: yPos + 0.12, w: 0.85, h: 0.26, fontSize: 7, fontFace: "Calibri", color: badgeCol, bold: true, valign: "middle", margin: 0 });
     }
 
     // Name + domain
-    s4.addText(comp.name, { x: 0.95, y: yPos + 0.02, w: 2.5, h: 0.3, fontSize: 13, fontFace: "Calibri", color: C.white, bold: true, margin: 0 });
-    s4.addText(comp.domain, { x: 0.95, y: yPos + 0.3, w: 2.5, h: 0.25, fontSize: 9, fontFace: "Calibri", color: C.textMuted, margin: 0 });
+    s4.addText(comp.name, { x: 1.75, y: yPos + 0.02, w: 1.8, h: 0.26, fontSize: 12, fontFace: "Calibri", color: C.white, bold: true, margin: 0 });
+    s4.addText(comp.domain, { x: 1.75, y: yPos + 0.26, w: 1.8, h: 0.2, fontSize: 8, fontFace: "Calibri", color: C.textMuted, margin: 0 });
 
     // Scores
     const getScoreCol = (v) => v >= 70 ? C.green : v >= 40 ? C.amber : C.red;
     const scoreData = [
-      { val: comp.score, x: 3.6, w: 1.2 },
-      { val: comp.schema, x: 4.8, w: 1.2 },
-      { val: comp.technical, x: 6.0, w: 1.2 },
-      { val: comp.ai, x: 7.2, w: 1.9 },
+      { val: comp.score, x: 3.6, w: 1.1 },
+      { val: comp.schema, x: 4.7, w: 1.1 },
+      { val: comp.technical, x: 5.8, w: 1.1 },
+      { val: comp.ai, x: 6.9, w: 1.5 },
     ];
     scoreData.forEach(sd => {
-      s4.addText(String(sd.val), { x: sd.x, y: yPos, w: sd.w, h: 0.6, fontSize: 18, fontFace: "Georgia", color: getScoreCol(sd.val), bold: true, valign: "middle", margin: 0 });
+      s4.addText(String(sd.val), { x: sd.x, y: yPos, w: sd.w, h: 0.50, fontSize: 16, fontFace: "Georgia", color: getScoreCol(sd.val), bold: true, valign: "middle", margin: 0 });
     });
   });
 
+  // Separator line
+  s4.addShape(pres.shapes.RECTANGLE, { x: 0.8, y: 4.95, w: 8.4, h: 0.01, fill: { color: C.medGray } });
+
   s4.addText("Quelle: AI Visibility Engine Scan, Februar 2026. Schema & Technical = gemessen. AI Visibility = Google SERP (live) + Heuristik.", {
-    x: 0.8, y: 4.5, w: 8.5, h: 0.4, fontSize: 9, fontFace: "Calibri", color: C.textMuted, align: "center"
+    x: 0.8, y: 4.98, w: 8.5, h: 0.3, fontSize: 8, fontFace: "Calibri", color: C.textMuted, align: "center"
   });
 
-  s4.addText("Alle drei Unternehmen scoren unter 50. Das ist keine Ausnahme \u2014 das ist der Normalzustand.\nWer jetzt handelt, hat einen echten Wettbewerbsvorteil.", {
-    x: 0.8, y: 4.9, w: 8.5, h: 0.6, fontSize: 13, fontFace: "Calibri", color: C.textLight, align: "center"
+  s4.addText("Selbst Siemens hat nur 45 Punkte. Schema Markup fehlt \u00FCberall.\nDas ist kein chilli mind Problem \u2014 das ist eine Marktchance.", {
+    x: 0.8, y: 5.2, w: 8.5, h: 0.4, fontSize: 12, fontFace: "Calibri", color: C.textLight, align: "center"
   });
 
   // ============================================================
