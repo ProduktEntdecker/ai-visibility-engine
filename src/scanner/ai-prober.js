@@ -69,9 +69,18 @@ function checkMentionInSerpResult(serpResult, brand, domain) {
 }
 
 /**
- * Heuristic-based AI visibility estimation.
- * Uses domain authority signals to simulate AI engine mentions.
- * This is replaced by live scraping in the full version.
+ * Heuristic-based AI visibility estimation (MVP).
+ *
+ * Methodology:
+ * - Base score derived from schema markup quality (30% weight) and
+ *   technical AI-readiness (20% weight), normalized to 0-1 range.
+ * - Small bonuses for common TLDs (+0.05) and distinctive brand names (+0.03).
+ * - Hard cap at 0.6 (60%) to reflect inherent uncertainty of heuristic estimation.
+ *
+ * Limitations:
+ * - Does NOT query ChatGPT, Perplexity, or Gemini directly.
+ * - Scores are derived from on-site signals, not actual AI engine responses.
+ * - Post-MVP will replace this with live Playwright scraping of each AI engine.
  */
 function estimateAIVisibility(domain, brand, schemaScore, technicalScore) {
   // Base score from technical signals
@@ -104,9 +113,9 @@ export async function probeAIEngines(domain, brand, industry, competitors = [], 
     hasSerpApiKey: !!SERP_API_KEY,
     engineBreakdown: {
       google: { mentions: 0, aiOverviewMentions: 0, totalQueries: 0, score: 0, method: SERP_API_KEY ? 'measured' : 'not_measured' },
-      chatgpt: { mentions: 0, totalQueries: prompts.length, score: 0, method: 'estimated' },
-      perplexity: { mentions: 0, totalQueries: prompts.length, score: 0, method: 'estimated' },
-      gemini: { mentions: 0, totalQueries: prompts.length, score: 0, method: 'estimated' },
+      chatgpt: { mentions: 0, totalQueries: prompts.length, score: 0, method: 'estimated', methodNote: 'Heuristic estimate based on schema/technical scores, not live AI queries' },
+      perplexity: { mentions: 0, totalQueries: prompts.length, score: 0, method: 'estimated', methodNote: 'Heuristic estimate based on schema/technical scores, not live AI queries' },
+      gemini: { mentions: 0, totalQueries: prompts.length, score: 0, method: 'estimated', methodNote: 'Heuristic estimate based on schema/technical scores, not live AI queries' },
     },
     competitorComparison: [],
     topMissingQueries: [],
@@ -165,12 +174,15 @@ export async function probeAIEngines(domain, brand, industry, competitors = [], 
 
   result.engineBreakdown.chatgpt.mentions = Math.round(prompts.length * chatgptFactor);
   result.engineBreakdown.chatgpt.score = Math.round(chatgptFactor * 100);
+  result.engineBreakdown.chatgpt.confidence = 'low';
 
   result.engineBreakdown.perplexity.mentions = Math.round(prompts.length * perplexityFactor);
   result.engineBreakdown.perplexity.score = Math.round(perplexityFactor * 100);
+  result.engineBreakdown.perplexity.confidence = 'low';
 
   result.engineBreakdown.gemini.mentions = Math.round(prompts.length * geminiFactor);
   result.engineBreakdown.gemini.score = Math.round(geminiFactor * 100);
+  result.engineBreakdown.gemini.confidence = 'low';
 
   // All queries not confirmed as mentioned are listed as missing
   for (const prompt of prompts) {
