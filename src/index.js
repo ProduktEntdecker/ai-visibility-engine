@@ -54,7 +54,7 @@ program
       spinner1.succeed(`Schema Audit complete — Score: ${chalk.bold(schemaResult.schemaScore)}/100`);
     } catch (err) {
       spinner1.fail(`Schema Audit failed: ${err.message}`);
-      schemaResult = { schemaScore: 0, pagesScanned: 0, totalSchemas: 0, schemasFound: [], missingSchemas: [], recommendations: [] };
+      schemaResult = { schemaScore: 0, pagesScanned: 0, totalSchemas: 0, schemasFound: [], allSchemaTypes: [], missingSchemas: [], recommendations: [] };
     }
 
     // Phase 2: Technical Audit

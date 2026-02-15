@@ -131,6 +131,7 @@ export async function auditSchema(domain, onProgress) {
     pagesScanned: 0,
     totalSchemas: 0,
     schemasFound: [],
+    allSchemaTypes: [],
     schemasByPage: [],
     missingSchemas: [],
     recommendations: [],
@@ -139,7 +140,6 @@ export async function auditSchema(domain, onProgress) {
 
   onProgress?.('Discovering pages...');
   const pages = await discoverPages(domain);
-  result.pagesScanned = pages.length;
 
   const allSchemas = [];
   const schemaTypesFound = new Set();
@@ -171,7 +171,10 @@ export async function auditSchema(domain, onProgress) {
     }
   }
 
+  // Set counts after scanning — pagesScanned reflects actually fetched pages, not discovered URLs
+  result.pagesScanned = result.schemasByPage.length;
   result.totalSchemas = allSchemas.length;
+  result.allSchemaTypes = [...schemaTypesFound].sort();
 
   // Score against required schemas
   let totalWeight = 0;
