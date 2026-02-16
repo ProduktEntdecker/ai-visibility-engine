@@ -287,42 +287,42 @@ async function generate() {
   });
 
   // ============================================================
-  // SLIDE 7: Partnership \u2014 So funktioniert es
+  // SLIDE 7: Partnership \u2014 Subunternehmer-Modell
   // ============================================================
   let s7 = pres.addSlide();
   s7.background = { color: C.black };
   s7.addText("PARTNERSHIP", { x: 0.8, y: 0.4, w: 4, h: 0.3, fontSize: 11, fontFace: "Calibri", color: C.textMuted, charSpacing: 4, margin: 0 });
-  s7.addText("chilli mind verkauft. Ich liefere.", { x: 0.8, y: 0.9, w: 8.5, h: 0.7, fontSize: 28, fontFace: "Georgia", color: C.white, bold: true, margin: 0 });
+  s7.addText("Euer Produkt. Meine Delivery.", { x: 0.8, y: 0.9, w: 8.5, h: 0.7, fontSize: 28, fontFace: "Georgia", color: C.white, bold: true, margin: 0 });
 
-  // Left card - chilli mind
+  // Left card - chilli mind (Auftraggeber)
   s7.addShape(pres.shapes.RECTANGLE, { x: 0.8, y: 1.8, w: 4.1, h: 2.6, fill: { color: C.medGray }, shadow: makeShadow() });
   s7.addShape(pres.shapes.RECTANGLE, { x: 0.8, y: 1.8, w: 4.1, h: 0.06, fill: { color: C.red } });
   s7.addImage({ data: logoBase64, x: 1.1, y: 1.95, w: 2.5, h: 0.6 });
   s7.addText([
-    { text: "\u2713 Bestehendes Kundenvertrauen nutzen", options: { breakLine: true, color: C.textLight } },
-    { text: "\u2713 Kein Delivery-Aufwand", options: { breakLine: true, color: C.textLight } },
-    { text: "\u2713 Neues Upselling-Produkt", options: { breakLine: true, color: C.textLight } },
-    { text: "\u2713 25% Provision = \u20AC5.000 pro Kunde/Jahr", options: { color: C.white, bold: true } },
+    { text: "\u2713 Verkauft AIO/GEO an eigene Kunden", options: { breakLine: true, color: C.textLight } },
+    { text: "\u2713 Beauftragt mich als Subunternehmer", options: { breakLine: true, color: C.textLight } },
+    { text: "\u2713 Kein eigener Delivery-Aufwand", options: { breakLine: true, color: C.textLight } },
+    { text: "\u2713 Marge: \u20AC5.000 pro Kunde/Jahr", options: { color: C.white, bold: true } },
   ], { x: 1.1, y: 2.65, w: 3.6, h: 1.6, fontSize: 12, fontFace: "Calibri", paraSpaceAfter: 6 });
 
-  // Right card - AI Visibility Engine (Florian)
+  // Right card - Florian (Subunternehmer)
   s7.addShape(pres.shapes.RECTANGLE, { x: 5.1, y: 1.8, w: 4.1, h: 2.6, fill: { color: C.medGray }, shadow: makeShadow() });
   s7.addShape(pres.shapes.RECTANGLE, { x: 5.1, y: 1.8, w: 4.1, h: 0.06, fill: { color: C.red } });
-  s7.addText("AI Visibility Engine", { x: 5.4, y: 1.95, w: 3.5, h: 0.35, fontSize: 16, fontFace: "Georgia", color: C.white, bold: true, margin: 0 });
-  s7.addText("Entwicklung & Delivery", { x: 5.4, y: 2.3, w: 3.5, h: 0.25, fontSize: 11, fontFace: "Calibri", color: C.textMuted, margin: 0 });
+  s7.addText("Florian Steiner", { x: 5.4, y: 1.95, w: 3.5, h: 0.35, fontSize: 16, fontFace: "Georgia", color: C.white, bold: true, margin: 0 });
+  s7.addText("Subunternehmer \u2014 AI Visibility Engine", { x: 5.4, y: 2.3, w: 3.5, h: 0.25, fontSize: 11, fontFace: "Calibri", color: C.textMuted, margin: 0 });
   s7.addText([
-    { text: "\u2713 80%+ AI-automatisiert", options: { breakLine: true, color: C.textLight } },
+    { text: "\u2713 Rechnung an chilli mind GmbH (B2B)", options: { breakLine: true, color: C.textLight } },
+    { text: "\u2713 80%+ AI-automatisierte Delivery", options: { breakLine: true, color: C.textLight } },
     { text: "\u2713 ~38h Aufwand pro Kunde/Jahr", options: { breakLine: true, color: C.textLight } },
-    { text: "\u2713 Skaliert auf 30+ Kunden", options: { breakLine: true, color: C.textLight } },
-    { text: "\u2713 75% = \u20AC15.000 pro Kunde/Jahr", options: { color: C.white, bold: true } },
+    { text: "\u2713 Skaliert auf 30+ Kunden", options: { color: C.textLight } },
   ], { x: 5.4, y: 2.65, w: 3.6, h: 1.6, fontSize: 12, fontFace: "Calibri", paraSpaceAfter: 6 });
 
   // Bottom economics
   s7.addShape(pres.shapes.RECTANGLE, { x: 0.8, y: 4.65, w: 8.4, h: 0.7, fill: { color: "3D1518" } });
   s7.addText([
     { text: "Bei 10 Kunden: ", options: { color: C.white, fontSize: 14 } },
-    { text: "\u20AC50.000/Jahr f\u00FCr chilli mind", options: { color: C.green, fontSize: 16, bold: true } },
-    { text: "  \u2014  ohne zus\u00E4tzlichen Personalaufwand", options: { color: C.textLight, fontSize: 12 } },
+    { text: "\u20AC50.000/Jahr Marge", options: { color: C.green, fontSize: 16, bold: true } },
+    { text: "  \u2014  ohne eigenen Personalaufwand", options: { color: C.textLight, fontSize: 12 } },
   ], { x: 1.0, y: 4.65, w: 8.0, h: 0.7, fontFace: "Calibri", margin: 0, valign: "middle", align: "center" });
 
   // ============================================================
