@@ -9,6 +9,7 @@
     "quick-scan": "node src/index.js quick-scan",
     "report": "node src/index.js report",
     "pitch": "node src/index.js pitch",
+    "strategy-deck": "node scripts/generate-strategy-deck.cjs",
     "demo": "bash scripts/demo.sh",
     "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
